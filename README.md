@@ -12,7 +12,6 @@ A dark-themed WinForms launcher for Windows 11 system commands. One click runs a
 - [Interface features](#interface-features)
 - [Command catalog](#command-catalog)
 - [Command safety model](#command-safety-model)
-- [Personal catalog (per-machine commands)](#personal-catalog-per-machine-commands)
 - [Prerequisites](#prerequisites)
 - [First run](#first-run-step-by-step)
 - [Command-line parameters](#command-line-parameters)
@@ -31,10 +30,7 @@ Each command runs in **its own console window** (`cmd.exe /k`), so you see the r
 
 The app **self-elevates on launch**: since most commands need administrator rights anyway, elevation happens once for the whole session, and every console window it opens afterward inherits that elevation — no repeated UAC prompts per button.
 
-Two companion files ship alongside the script and must stay in the same folder:
-
-- **`Commands.psd1`** — the portable command catalog (145 commands, meant to be identical across all your machines)
-- **`Commands.Personnel.psd1`** *(optional)* — a per-machine catalog for commands that don't belong in the shared one (see [Personal catalog](#personal-catalog-per-machine-commands))
+A single companion file ships alongside the script and must stay in the same folder: **`Commands.psd1`**, the command catalog (145 commands).
 
 ---
 
@@ -80,16 +76,6 @@ Two companion files ship alongside the script and must stay in the same folder:
 - **No command uses `wmic`** (removed starting Windows 11 24H2) — enforced by a dedicated self-test regression check.
 - The `Cmd` field in the catalog is **always single-quoted** in `Commands.psd1`, which structurally prevents PowerShell variable interpolation (`$_`, `$err`, etc.) from ever leaking into a command — the root cause of two early bugs (v1.4.3, v1.4.4) that this design eliminates entirely rather than patching case by case.
 - A handful of commands too complex to survive `cmd.exe`'s `-Command` reconstruction are stored as Base64 (`-EncodedCommand`, UTF-16LE) instead. Two self-test assertions decode every one of them and verify the resulting script is syntactically valid (via the real PowerShell AST parser) — so a corrupted or truncated Base64 blob is caught by `-SelfTest` instead of surfacing as a silent blank console window when someone clicks the button.
-
----
-
-## Personal catalog (per-machine commands)
-
-`Commands.Personnel.psd1` is an **optional** second catalog, same folder and same format as `Commands.psd1`, but **not** meant to be shared or synced across machines — a place for commands that only make sense on one specific machine (e.g. managing a scheduled task that only exists there).
-
-- Absent → no effect, no warning; the main catalog loads and works normally on its own.
-- Present but invalid → a non-blocking warning is shown; the main catalog still loads normally.
-- A category name that collides with one already in the main catalog **silently overwrites it** — a dedicated self-test assertion checks for this specific collision (comparing category names between both catalogs already in memory) so it's caught before it manifests as a mysteriously incomplete category in the UI.
 
 ---
 
@@ -156,7 +142,7 @@ The toolbox never redirects or captures the output of the commands it launches �
 
 ## Extending the catalog
 
-Adding a command means editing `Commands.psd1` (or `Commands.Personnel.psd1` for something machine-specific) directly — there's no in-app editor by design, to keep the catalog a plain-text file that's easy to diff, version, and sync across machines.
+Adding a command means editing `Commands.psd1` directly — there's no in-app editor by design, to keep the catalog a plain-text file that's easy to diff, version, and sync across machines.
 
 ```powershell
 @{ Label   = "My new command"
@@ -178,15 +164,15 @@ Adding a command means editing `Commands.psd1` (or `Commands.Personnel.psd1` for
 
 ## Multi-machine deployment
 
-1. **Distribute all three files together**: `Toolbox-SystemCommands_Win11.ps1`, `Commands.psd1`, and optionally a machine-specific `Commands.Personnel.psd1` if needed. The script and `Commands.psd1` must stay in the same folder.
+1. **Distribute both files together**: `Toolbox-SystemCommands_Win11.ps1` and `Commands.psd1`, in the same folder.
 
 2. **Trust the signing certificate** if a strict execution policy is enforced (`-ExecutionPolicy AllSigned`/`RemoteSigned`).
 
-3. **Run `-SelfTest` first** on each machine — no admin rights needed, UI never opens, safe to run before deciding to proceed. A `1` exit code means something in the catalog (or a personal catalog collision) needs attention before use.
+3. **Run `-SelfTest` first** on each machine — no admin rights needed, UI never opens, safe to run before deciding to proceed. A `1` exit code means something in the catalog needs attention before use.
 
 4. Because the toolbox is a **GUI launcher meant for interactive, in-person use**, it is not designed to be triggered unattended from a scheduled task the way a cleanup script would be — there's no CLI flag to launch a specific command non-interactively. Deploy it as a tool people open and click through themselves, not as a background job.
 
-5. Keep `Commands.psd1` identical across machines (that's its purpose); use `Commands.Personnel.psd1` locally on any machine that needs commands the others shouldn't have.
+5. Keep `Commands.psd1` identical across machines — that's its purpose.
 
 ---
 
@@ -202,12 +188,6 @@ This was the historical symptom of a `-EncodedCommand` decoding or syntax proble
 <summary><strong>Loading Commands.psd1 fails, or the whole catalog is empty</strong></summary>
 
 Almost always an unescaped `$` inside a `Desc` or `Help` field (which use double quotes, so PowerShell tries to interpolate it as a variable — `Import-PowerShellDataFile`'s restricted-language mode then refuses to load the file at all). Search the file you last edited for a literal `$` not preceded by a backtick. `-SelfTest` includes a dedicated regression check that scans every `Desc`/`Help` line for exactly this pattern.
-</details>
-
-<details>
-<summary><strong>A whole category seems to be missing some commands</strong></summary>
-
-If you're using `Commands.Personnel.psd1`, check whether one of its category names exactly matches a category name in the main `Commands.psd1` — the personal catalog loads *after* the main one and silently overwrites any category with the same name. `-SelfTest` has a dedicated assertion for this collision; rename the personal category to something unique instead.
 </details>
 
 <details>
