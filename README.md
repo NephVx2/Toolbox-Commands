@@ -14,6 +14,7 @@ A dark-themed WinForms launcher for Windows 11 system commands. One click runs a
 - [Command safety model](#command-safety-model)
 - [Prerequisites](#prerequisites)
 - [First run](#first-run-step-by-step)
+- [Desktop shortcut](#desktop-shortcut)
 - [Command-line parameters](#command-line-parameters)
 - [Files written by the script](#files-written-by-the-script)
 - [Extending the catalog](#extending-the-catalog)
@@ -114,6 +115,34 @@ A single companion file ships alongside the script and must stay in the same fol
 6. Star (⭐) the commands you use often — they'll be quickly filterable afterward without hunting through categories.
 
 7. When you want to review what's been run, use the HTML or JSON export button in the top bar.
+
+---
+
+## Desktop shortcut
+
+Launching the toolbox by right-clicking the `.ps1` file and choosing "Run with PowerShell" works, but it briefly flashes a console window and leaves it open behind the GUI. A desktop shortcut avoids both issues and gives you a normal double-click launcher.
+
+1. Right-click the Desktop → **New → Shortcut**.
+
+2. For the location, enter (adjust the script path to wherever you placed it):
+
+   ```
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Scripts\Toolbox\Toolbox-SystemCommands_Win11.ps1"
+   ```
+
+   | Flag | Why |
+   |---|---|
+   | `-NoProfile` | Skips loading your PowerShell profile script, so the toolbox starts faster and isn't affected by anything custom in your profile |
+   | `-ExecutionPolicy Bypass` | Applies only to this one process — lets the script run even if the system's default execution policy would otherwise block it, without changing that policy machine-wide |
+   | `-WindowStyle Hidden` | Suppresses the PowerShell console window, so only the toolbox's own GUI appears |
+
+3. Name the shortcut (e.g. "Toolbox System Commands"), then finish.
+
+4. *(Optional)* Right-click the new shortcut → **Properties** → **Change Icon...** to pick something more recognizable than the default PowerShell icon.
+
+5. *(Optional)* On the same **Properties** tab, set **Run** to **Minimized** as an extra safeguard — with `-WindowStyle Hidden` already in the command this is normally unnecessary, but it's a harmless belt-and-suspenders option on systems where a security tool intercepts and overrides `-WindowStyle`.
+
+The UAC elevation prompt still appears on launch — `-WindowStyle Hidden` only hides the console window, it doesn't (and shouldn't) suppress the administrator confirmation.
 
 ---
 
