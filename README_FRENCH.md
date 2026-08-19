@@ -14,6 +14,7 @@ Un lanceur WinForms a theme sombre pour les commandes systeme Windows 11. Un cli
 - [Modele de securite des commandes](#modele-de-securite-des-commandes)
 - [Prerequis](#prerequis)
 - [Premier lancement](#premier-lancement-pas-a-pas)
+- [Raccourci bureau](#raccourci-bureau)
 - [Parametres en ligne de commande](#parametres-en-ligne-de-commande)
 - [Fichiers ecrits par le script](#fichiers-ecrits-par-le-script)
 - [Etendre le catalogue](#etendre-le-catalogue)
@@ -114,6 +115,34 @@ Un seul fichier compagnon accompagne le script et doit rester dans le meme dossi
 6. Marquer d'une etoile (⭐) les commandes que vous utilisez souvent — elles seront ensuite rapidement filtrables sans avoir a fouiller dans les categories.
 
 7. Pour consulter ce qui a ete lance, utiliser le bouton d'export HTML ou JSON dans la barre superieure.
+
+---
+
+## Raccourci bureau
+
+Lancer la toolbox par clic droit sur le fichier `.ps1` puis "Executer avec PowerShell" fonctionne, mais fait clignoter brievement une fenetre console et la laisse ouverte derriere l'interface graphique. Un raccourci bureau evite les deux problemes et offre un lancement par simple double-clic.
+
+1. Clic droit sur le Bureau → **Nouveau → Raccourci**.
+
+2. Dans l'emplacement, saisir (en adaptant le chemin du script a l'endroit ou vous l'avez place) :
+
+   ```
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Scripts\Toolbox\Toolbox-SystemCommands_Win11.ps1"
+   ```
+
+   | Parametre | Pourquoi |
+   |---|---|
+   | `-NoProfile` | Ignore le chargement de votre profil PowerShell, donc la toolbox demarre plus vite et n'est pas affectee par un contenu personnalise dans ce profil |
+   | `-ExecutionPolicy Bypass` | S'applique uniquement a ce processus — permet au script de s'executer meme si la politique d'execution par defaut du systeme le bloquerait sinon, sans modifier cette politique a l'echelle de la machine |
+   | `-WindowStyle Hidden` | Supprime la fenetre console PowerShell, pour que seule l'interface propre de la toolbox apparaisse |
+
+3. Nommer le raccourci (ex : "Toolbox Commandes Systeme"), puis terminer.
+
+4. *(Optionnel)* Clic droit sur le nouveau raccourci → **Proprietes** → **Changer d'icone...** pour choisir quelque chose de plus reconnaissable que l'icone PowerShell par defaut.
+
+5. *(Optionnel)* Sur le meme onglet **Proprietes**, regler **Executer** sur **Reduite** en securite supplementaire — avec `-WindowStyle Hidden` deja present dans la commande, c'est normalement inutile, mais c'est une option sans risque sur les systemes ou un outil de securite intercepte et neutralise `-WindowStyle`.
+
+L'invite d'elevation UAC continue de s'afficher au lancement — `-WindowStyle Hidden` masque uniquement la fenetre console, elle ne supprime pas (et ne doit pas supprimer) la confirmation administrateur.
 
 ---
 
