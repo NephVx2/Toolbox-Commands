@@ -1,5 +1,7 @@
 # Toolbox-SystemCommands_Win11
 
+🇬🇧 [English version](README.md)
+
 Un lanceur WinForms a theme sombre pour les commandes systeme Windows 11. Un clic execute une commande de diagnostic ou de maintenance dans sa propre fenetre console — plus besoin de chercher la bonne formule `DISM`/`SFC`/`netsh` ou de la retaper de memoire a chaque fois.
 
 > 145 commandes reparties en 9 categories, chacune avec une description en langage clair, une confirmation demandee pour tout ce qui modifie l'etat du systeme, une journalisation complete de l'historique, et un self-test a 47 assertions qui ne necessite jamais les droits admin ni n'ouvre l'interface.
