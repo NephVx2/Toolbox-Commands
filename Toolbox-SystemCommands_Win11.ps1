@@ -23,7 +23,7 @@
 
 .NOTES
     Auteur   : Nephren
-    Version  : 2.5.3
+    Version  : 2.5.4
     Usage    : Clic droit > Executer avec PowerShell, ou .\Toolbox-SystemCommands_Win11.ps1
                -SelfTest : execute la batterie de tests internes (integrite du catalogue de
                commandes, fonctions requises, regressions connues) sans ouvrir l'interface
@@ -376,6 +376,20 @@
     toujours etre un veritable tableau quel que soit le nombre de groupes obtenus (0, 1
     ou plusieurs) - pattern deja utilise a plusieurs reprises ailleurs dans le catalogue
     et la suite pour ce meme type de piege.
+
+    v2.5.4 : optimisation preventive de la construction de l'interface - encadrement de la
+    boucle qui cree les boutons du catalogue (~145 commandes x 3 sous-controles = ~435
+    controles ajoutes a $flowPanel) avec $flowPanel.SuspendLayout() / .ResumeLayout(),
+    absents jusqu'ici. Sans ca, chaque Controls.Add() individuel declenchait un recalcul
+    complet de la disposition du panneau avant l'ajout suivant - un cout qui ne grandit pas
+    lineairement avec le nombre de commandes du catalogue (chaque nouveau recalcul doit
+    repositionner tous les controles deja presents), donc un risque de ralentissement du
+    demarrage de plus en plus perceptible a mesure que le catalogue s'etoffe. A l'echelle
+    actuelle (145 commandes) l'effet restait imperceptible - correctif applique en
+    prevention plutot qu'en reponse a un ralentissement deja constate. Aucun changement de
+    rendu final : la disposition affichee est strictement identique, seul le nombre de
+    recalculs intermediaires passe de ~290 (un par ligne/en-tete ajoute a $flowPanel) a 1
+    (un seul, a la fin, via ResumeLayout).
 #>
 
 param(
@@ -1307,6 +1321,18 @@ $flowPanel.BringToFront()
 # Table de correspondance pour le filtre : chaque entree = {Control, Group, Search, Type, Label}
 $global:layoutItems = New-Object System.Collections.Generic.List[object]
 
+# SuspendLayout/ResumeLayout (v2.5.4) : sans ca, chaque $flowPanel.Controls.Add() plus bas
+# (environ 145 x 2 = ~290 ajouts directs sur $flowPanel - un par en-tete de categorie et un
+# par ligne de commande, chaque ligne elle-meme composee de 3 sous-controles) declenche un
+# recalcul complet de la disposition du panneau, immediatement, avant l'ajout suivant. A
+# 145 commandes ce cout reste faible, mais il ne grandit pas lineairement avec le nombre de
+# commandes du catalogue (chaque nouveau recalcul doit repositionner tous les controles deja
+# presents) - un correctif preventif avant que ca ne devienne perceptible au demarrage si le
+# catalogue continue de s'etoffer. Aucun changement visuel : la disposition finale est
+# strictement identique, seul le nombre de recalculs intermediaires est reduit a un seul, a
+# la toute fin (ResumeLayout), une fois tous les controles deja en place.
+$flowPanel.SuspendLayout()
+
 foreach ($group in $commandGroups.Keys) {
     $lbl = New-Object System.Windows.Forms.Label
     $lbl.Text = "[-] $group"
@@ -1486,8 +1512,44 @@ foreach ($group in $commandGroups.Keys) {
     }
 }
 
+$flowPanel.ResumeLayout()
+
 $global:searchBox.Add_TextChanged({ Update-Visibility })
 
 Update-Visibility
 
 [System.Windows.Forms.Application]::Run($form)
+
+# SIG # Begin signature block
+# MIIFwgYJKoZIhvcNAQcCoIIFszCCBa8CAQExDzANBglghkgBZQMEAgEFADB5Bgor
+# BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCRklQh/9sLDsKT
+# U//TEhWv0wCM/wmZawPKlI1b0nE286CCAygwggMkMIICDKADAgECAhB6X4r8AlBU
+# p0MV3JpMuQ6sMA0GCSqGSIb3DQEBCwUAMCoxKDAmBgNVBAMMH05lcGhyZW4gUG93
+# ZXJTaGVsbCBDb2RlIFNpZ25pbmcwHhcNMjYwNzA0MDIzMzIwWhcNMzEwNzA0MDI0
+# MzIwWjAqMSgwJgYDVQQDDB9OZXBocmVuIFBvd2VyU2hlbGwgQ29kZSBTaWduaW5n
+# MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1JnV5AocUnAMNIG3nYF9
+# 5mOQz5NzMYJqc9D6mq3pjRlmuYIgvYEuJL5dvt8eoAiUKd+XHTaY5wl+zt7LUon+
+# TmEldVwfrYvROpI+5TDyBRc5BzY4uACsA4JUM4ienjX04BBKT3uH6JwHzBluWqcG
+# Xrg16NqzDiae7WNzVrev+BME00mgSvBo3hKp3sHIvFQaAmjGXLyJd+llfnBpmoD9
+# JnOxMKO7VFIlhAz5cEUnFu/xDLHgARdBUfXA5odScWKiDvygNZsH1vHo07Oo7pDK
+# awR3bT6lcXWRXSUmawgE1mZra+b9qpeNol+5J+86zN83RccBKZBUtQQoyy+cv20x
+# VQIDAQABo0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMw
+# HQYDVR0OBBYEFNxVaDYoNv8UXQWnbtEy/DTaQHjYMA0GCSqGSIb3DQEBCwUAA4IB
+# AQCE4NqZbeximmbNEORyLxvIYiMQwP59B9R95blQQ/zugPSt4wab61yBbgO1E3mH
+# mUdN0fCHhN/u0uB7h7ZBYw1w4hnzoiBac4UYzsXH4/D41gBjutbtDllRy6/zs3dl
+# /hbbHAmwKXdjNVLG9cPkpWlkvKR1DJLMugU2uj+S6k+U7DfHo76sbAKqiu3biXtd
+# mao6PP99EU7JBYZjsJ+BsnYcZ2KcnZ8TKiRuhSXoxAyPman7Z0BVo1H2O+fxd96b
+# 4W8VclmpFh7T2CyRAHolwEy5coFYyueisO0PZg+nKwXr66+m1T1CBLQYwh79/SKO
+# wGUJyU5RtTryD+hfLwkTQKVCMYIB8DCCAewCAQEwPjAqMSgwJgYDVQQDDB9OZXBo
+# cmVuIFBvd2VyU2hlbGwgQ29kZSBTaWduaW5nAhB6X4r8AlBUp0MV3JpMuQ6sMA0G
+# CWCGSAFlAwQCAQUAoIGEMBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZI
+# hvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcC
+# ARUwLwYJKoZIhvcNAQkEMSIEILkBlhQ+nU7m+SYot+Sm87Ctjbl3YSmVxHqKEjXG
+# nF7YMA0GCSqGSIb3DQEBAQUABIIBAApmCHB0f2LM6TxTtP0n1n15uzClgRwvR/73
+# qbythO4Le8k0+dc1ujxhPWWb3uW63emS3Yy9u+VlcB62YY+oUI2B98igbJwK6ksJ
+# HI2q8E2kyS77qff9RSOoE6K2ewWGbMaRAfTn2baCH7Ca7c6A9ai8CvIHvxAfhPJ1
+# n3aibg0wgr8MG20CLRX3iTD1J6XyA1kdlsVy7muXMANRuftRCJLUhmed6C7N7mXJ
+# AAF/w84lOPnKNDPvLFJe486wnX6aol4GDs0+3zAgYsvYZNXHQSxKV1G/0grXgHIa
+# coWwn/2qLi9l47bQ4NcPLaB0i4CL7GgxF5pKhbuHWPPcuo3LyQU=
+# SIG # End signature block
