@@ -1,4 +1,4 @@
-# Toolbox-SystemCommands_Win11
+# Toolbox-SystemCommands
 
 🇫🇷 [Version française](README_FRENCH.md)
 
@@ -11,6 +11,8 @@ A dark-themed WinForms launcher for Windows 11 system commands. One click runs a
 ## Table of contents
 
 - [Overview](#overview)
+- [Folder structure: EN vs FRENCH](#folder-structure-en-vs-french)
+- [Screenshots](#screenshots)
 - [Interface features](#interface-features)
 - [Command catalog](#command-catalog)
 - [Command safety model](#command-safety-model)
@@ -27,7 +29,7 @@ A dark-themed WinForms launcher for Windows 11 system commands. One click runs a
 
 ## Overview
 
-`Toolbox-SystemCommands_Win11.ps1` is a graphical launcher (WinForms, dark theme) for the day-to-day PowerShell/cmd commands used to diagnose and maintain a Windows 11 machine — disk health, network resets, Windows Update repairs, driver checks, security posture, privacy/telemetry toggles, and more.
+`Toolbox-SystemCommands.ps1` is a graphical launcher (WinForms, dark theme) for the day-to-day PowerShell/cmd commands used to diagnose and maintain a Windows 11 machine — disk health, network resets, Windows Update repairs, driver checks, security posture, privacy/telemetry toggles, and more.
 
 Each command runs in **its own console window** (`cmd.exe /k`), so you see the raw, unfiltered output exactly as if you'd typed the command yourself — the toolbox doesn't parse, capture, or reinterpret it.
 
@@ -37,12 +39,40 @@ A single companion file ships alongside the script and must stay in the same fol
 
 ---
 
+## Folder structure: EN vs FRENCH
+
+This repository ships **two independent, self-contained versions** of the toolbox — English and French — each in its own folder, so you never end up mixing a script from one language with the catalog from the other:
+
+| Folder | Contents |
+|---|---|
+| **`Toolbox-SystemCommands-EN/`** | `Toolbox-SystemCommands.ps1` + `Commands.psd1` — fully in English: labels, descriptions, help text, and everything printed to the console |
+| **`Toolbox-SystemCommands-FRENCH/`** | The French-language script and catalog — same features, same 145 commands, entirely in French |
+
+The two are functionally identical (same catalog, same categories, same self-test count) — only the display language differs. Pick **one** folder and copy **both files it contains together**; don't mix a `.ps1` from one folder with the `Commands.psd1` from the other; the labels and text would end up in two different languages within the same interface. Both versions work equally well on an English- or French-language Windows install — this script only reads/writes the registry and WMI directly, so unlike some other scripts in the suite, nothing here is affected by Windows' own display language.
+
+If you only need one language, you can safely delete the folder you don't need.
+
+---
+
+## Screenshots
+
+<p float="left">
+  <img src="https://raw.githubusercontent.com/NephVx2/Toolbox-SystemCommands/main/screenshots-ENGLISH/01-system-integrity.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/NephVx2/Toolbox-SystemCommands/main/screenshots-ENGLISH/10-html-preview.png" width="48%" />
+</p>
+
+Left: the main window (System integrity category expanded, favorites/search/export bar, fixed description panel) with the Full Integrity Pack's help popup open. Right: the exported HTML history report.
+
+More screenshots (Disk, Windows Update, Performance, Quick security, Privacy/Telemetry, a live virtualization-state check, a live telemetry-services check, and Miscellaneous) are in the [`screenshots-ENGLISH`](https://github.com/NephVx2/Toolbox-SystemCommands/tree/main/screenshots-ENGLISH) folder.
+
+---
+
 ## Interface features
 
 | Feature | Detail |
 |---|---|
 | **Collapsible categories** | Click a category header to fold/unfold it — useful once the catalog grows past a couple dozen commands |
-| **Favorites** | Click the star next to any command to pin it; persisted in `Favoris.txt` across sessions; "Favorites only" filter available |
+| **Favorites** | Click the star next to any command to pin it; persisted in `Favorites.txt` across sessions; "Favorites only" filter available |
 | **Search** | `Ctrl+F` jumps straight to the search box; matches against the command's label, description, **and** help text (not just the visible button label) |
 | **Help button (`?`)** | Present on every command for layout consistency, but only active (cyan, clickable) on commands that have a `Help` field — opens a message box with a longer explanation. 81 of 145 commands currently have one |
 | **Right-click → Copy command** | Copies the real underlying command line to the clipboard, in case you'd rather run or inspect it yourself |
@@ -50,6 +80,10 @@ A single companion file ships alongside the script and must stay in the same fol
 | **History log** | Every launch is timestamped and recorded, with the machine name, user, Windows version, and the PID of the launched process |
 | **HTML export** | One button generates a dark-themed report (visual identity shared with the rest of the maintenance suite) — grouped by day (most recent expanded, older days collapsed), with a live JavaScript filter, stat cards (total commands, active days, sensitive commands run, most-used command), and sensitive commands highlighted in orange |
 | **JSON export** | Same history data as machine-readable JSON |
+
+<img src="https://raw.githubusercontent.com/NephVx2/Toolbox-SystemCommands/main/screenshots-ENGLISH/08-check-telemetry-service.png" width="70%" />
+
+*The `?` button's help popup, open on "Check telemetry services" — its console output (behind) shows the 5 services it just queried, and the popup breaks down what each one does.*
 
 ---
 
@@ -59,22 +93,22 @@ A single companion file ships alongside the script and must stay in the same fol
 
 | Category | Count | Examples |
 |---|---|---|
-| **Integrite systeme** (System integrity) | 12 | SFC /scannow, DISM CheckHealth/ScanHealth/RestoreHealth, combined CHKDSK+DISM+SFC pack, restore points |
-| **Disque** (Disk) | 11 | CHKDSK (read-only and repair variants), SMART status, TRIM verification, real-time disk latency, disk error history |
-| **Reseau** (Network) | 18 | DNS flush, Winsock/TCP-IP reset, IP lease renewal, NextDNS test, Wi-Fi networks/speed, public IP, multi-level connectivity diagnostic, `hosts` file contents |
+| **System integrity** | 12 | SFC /scannow, DISM CheckHealth/ScanHealth/RestoreHealth, combined CHKDSK+DISM+SFC pack, restore points |
+| **Disk** | 11 | CHKDSK (read-only and repair variants), SMART status, TRIM verification, real-time disk latency, disk error history |
+| **Network** | 18 | DNS flush, Winsock/TCP-IP reset, IP lease renewal, NextDNS test, Wi-Fi networks/speed, public IP, multi-level connectivity diagnostic, `hosts` file contents |
 | **Windows Update** | 9 | Component reset, forced scan, Microsoft Store reset, update history, SoftwareDistribution cache size, pending-reboot check |
 | **Performance** | 16 | Startup apps (including scheduled-task-based ones), boot time breakdown, WinSAT score, HVCI/VBS toggles, top RAM/CPU processes, Windows Search service |
-| **Pilotes / Materiel** (Drivers / Hardware) | 12 | Devices in error state, NVIDIA GPU status, BIOS/motherboard info, installed RAM, recently installed drivers, disabled devices |
-| **Securite rapide** (Quick security) | 22 | Defender status, SMBv1 check, firewall verification, Secure Boot/TPM, BitLocker, failed logon attempts, ASR rules, UAC, Credential Guard, Controlled Folder Access |
-| **Confidentialite / Telemetrie** (Privacy / Telemetry) | 28 | Telemetry level, camera/mic/location access, Advertising ID, Windows Recall, Start menu web search & sponsored suggestions, Copilot, Delivery Optimization, WER, OneDrive sync — most as paired "check status" / "disable" commands |
-| **Divers** (Misc) | 17 | Battery report, power diagnostics, DirectX report, Windows activation status, unexpected shutdown history, time sync, installed printers |
+| **Drivers / Hardware** | 12 | Devices in error state, NVIDIA GPU status, BIOS/motherboard info, installed RAM, recently installed drivers, disabled devices |
+| **Quick security** | 22 | Defender status, SMBv1 check, firewall verification, Secure Boot/TPM, BitLocker, failed logon attempts, ASR rules, UAC, Credential Guard, Controlled Folder Access |
+| **Privacy / Telemetry** | 28 | Telemetry level, camera/mic/location access, Advertising ID, Windows Recall, Start menu web search & sponsored suggestions, Copilot, Delivery Optimization, WER, OneDrive sync — most as paired "check status" / "disable" commands |
+| **Miscellaneous** | 17 | Battery report, power diagnostics, DirectX report, Windows activation status, unexpected shutdown history, time sync, installed printers |
 
 ---
 
 ## Command safety model
 
 - **Every command has `Confirm = $true` or `$false`** in the catalog — there is no "undecided" state; the self-test enforces that this field is always present.
-- **26 commands currently require confirmation** — anything that changes system state, needs a restart, or could disrupt a running session (e.g. `Reset Winsock`, `Reset pile TCP/IP`, `CHKDSK C: /f /r (au reboot)`, `Redemarrer le PC`, `Eteindre le PC`, most of the disable-toggles in Confidentialite/Telemetrie).
+- **26 commands currently require confirmation** — anything that changes system state, needs a restart, or could disrupt a running session (e.g. `Reset Winsock`, `Reset TCP/IP stack`, `CHKDSK C: /f /r (on reboot)`, `Restart PC`, `Shut down PC`, most of the disable-toggles in Privacy / Telemetry).
 - A dedicated self-test assertion locks in that six specific known-sensitive commands (Winsock reset, TCP/IP stack reset, WU component reset, scheduled CHKDSK, restart, shutdown) **always** carry `Confirm = $true` — a regression there would fail `-SelfTest` immediately rather than surface as a silent, un-confirmed destructive action later.
 - **No command uses `wmic`** (removed starting Windows 11 24H2) — enforced by a dedicated self-test regression check.
 - The `Cmd` field in the catalog is **always single-quoted** in `Commands.psd1`, which structurally prevents PowerShell variable interpolation (`$_`, `$err`, etc.) from ever leaking into a command — the root cause of two early bugs (v1.4.3, v1.4.4) that this design eliminates entirely rather than patching case by case.
@@ -94,12 +128,12 @@ A single companion file ships alongside the script and must stay in the same fol
 
 ## First run (step by step)
 
-1. Copy **both** `Toolbox-SystemCommands_Win11.ps1` **and** `Commands.psd1` to the target machine, in the same folder (e.g. `C:\Scripts\Toolbox`). The script will not find its commands if `Commands.psd1` is left behind.
+1. Copy **both** `Toolbox-SystemCommands.ps1` **and** `Commands.psd1` — from the same language folder, see [Folder structure](#folder-structure-en-vs-french) — to the target machine, in the same folder (e.g. `C:\Scripts\Toolbox`). The script will not find its commands if `Commands.psd1` is left behind.
 
 2. Validate the catalog and internal functions **without opening the UI and without admin rights**:
 
    ```powershell
-   .\Toolbox-SystemCommands_Win11.ps1 -SelfTest
+   .\Toolbox-SystemCommands.ps1 -SelfTest
    ```
 
    Runs 47 assertions: catalog structure (every command has a label/command/description/confirm flag, no duplicate labels), known regressions (no unescaped pipes, no `wmic`, `-EncodedCommand` blocks all decode and parse cleanly), the six named sensitive commands all carry `Confirm = $true`, all required functions are defined, logging/favorites paths are valid, and the elevation check itself works. Exits with code `0` on full pass, `1` otherwise.
@@ -107,10 +141,10 @@ A single companion file ships alongside the script and must stay in the same fol
 3. Launch the toolbox normally (accept the UAC prompt):
 
    ```powershell
-   .\Toolbox-SystemCommands_Win11.ps1
+   .\Toolbox-SystemCommands.ps1
    ```
 
-4. Browse by category, or press `Ctrl+F` and search for what you need (e.g. "DNS", "BitLocker", "telemetrie").
+4. Browse by category, or press `Ctrl+F` and search for what you need (e.g. "DNS", "BitLocker", "telemetry").
 
 5. Click a command. If it's flagged sensitive, confirm the Yes/No prompt. A console window opens and runs it — read its output directly there.
 
@@ -122,21 +156,31 @@ A single companion file ships alongside the script and must stay in the same fol
 
 ## Desktop shortcut
 
-Launching the toolbox by right-clicking the `.ps1` file and choosing "Run with PowerShell" works, but it briefly flashes a console window and leaves it open behind the GUI. A desktop shortcut avoids both issues and gives you a normal double-click launcher.
+Launching the toolbox by right-clicking the `.ps1` file and choosing "Run with PowerShell" works, but it briefly flashes a console window and leaves it open behind the GUI. A desktop shortcut avoids both issues and gives you a normal double-click launcher — useful if you expect to use the toolbox regularly.
 
 1. Right-click the Desktop → **New → Shortcut**.
 
-2. For the location, enter (adjust the script path to wherever you placed it):
+2. For the location, enter (adjust the script path to wherever you placed it) — pick whichever variant matches what's installed on the machine:
+
+   **Windows PowerShell 5.1** (built into every Windows install, always available):
 
    ```
-   powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Scripts\Toolbox\Toolbox-SystemCommands_Win11.ps1"
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Scripts\Toolbox\Toolbox-SystemCommands.ps1"
+   ```
+
+   **PowerShell 7+** (only if installed separately):
+
+   ```
+   pwsh.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Scripts\Toolbox\Toolbox-SystemCommands.ps1"
    ```
 
    | Flag | Why |
    |---|---|
    | `-NoProfile` | Skips loading your PowerShell profile script, so the toolbox starts faster and isn't affected by anything custom in your profile |
    | `-ExecutionPolicy Bypass` | Applies only to this one process — lets the script run even if the system's default execution policy would otherwise block it, without changing that policy machine-wide |
-   | `-WindowStyle Hidden` | Suppresses the PowerShell console window, so only the toolbox's own GUI appears |
+   | `-WindowStyle Hidden` | Suppresses the launching process's own console window, so only the toolbox's own GUI appears |
+
+   Both variants end up behaving identically: the toolbox self-elevates on launch via `Start-Process powershell.exe -Verb RunAs` (see the script's auto-elevation block), which always relaunches under Windows PowerShell 5.1 once you accept the UAC prompt — regardless of whether the shortcut itself started with `powershell.exe` or `pwsh.exe`. The choice between the two only affects that first, brief, non-elevated moment before UAC fires; pick whichever engine you actually have installed.
 
 3. Name the shortcut (e.g. "Toolbox System Commands"), then finish.
 
@@ -162,10 +206,10 @@ There is no CLI flag to launch a specific command directly — the toolbox is de
 
 | File / folder | Content |
 |---|---|
-| `%USERPROFILE%\Desktop\Rapports_Maintenance\ToolboxCommandes\Historique.log` | Plain-text, append-only log of every command launched — timestamp, machine name, user, Windows version, and the PID of the launched process |
-| `%USERPROFILE%\Desktop\Rapports_Maintenance\ToolboxCommandes\Favoris.txt` | One favorited command label per line, loaded back on next launch |
-| `Historique.html` *(on demand, export button)* | Dark-themed visual history report, day-grouped and collapsible, with search and stat cards |
-| `Historique.json` *(on demand, export button)* | Same history data as machine-readable JSON |
+| `%USERPROFILE%\Desktop\Maintenance_Reports\ToolboxCommands\History.log` | Plain-text, append-only log of every command launched — timestamp, machine name, user, Windows version, and the PID of the launched process |
+| `%USERPROFILE%\Desktop\Maintenance_Reports\ToolboxCommands\Favorites.txt` | One favorited command label per line, loaded back on next launch |
+| `History.html` *(on demand, export button)* | Dark-themed visual history report, day-grouped and collapsible, with search and stat cards |
+| `History.json` *(on demand, export button)* | Same history data as machine-readable JSON |
 
 The toolbox never redirects or captures the output of the commands it launches — each runs in its own interactive `cmd.exe` window, so the log records *what* was run, not its output. See [Troubleshooting](#troubleshooting) for why this is a deliberate trade-off, not an oversight.
 
@@ -195,7 +239,7 @@ Adding a command means editing `Commands.psd1` directly — there's no in-app ed
 
 ## Multi-machine deployment
 
-1. **Distribute both files together**: `Toolbox-SystemCommands_Win11.ps1` and `Commands.psd1`, in the same folder.
+1. **Distribute both files together**: `Toolbox-SystemCommands.ps1` and `Commands.psd1`, in the same folder — from the same language folder (see [Folder structure](#folder-structure-en-vs-french)).
 
 2. **Trust the signing certificate** if a strict execution policy is enforced (`-ExecutionPolicy AllSigned`/`RemoteSigned`).
 
@@ -230,9 +274,9 @@ Read the assertion label — it points directly at what's wrong: a missing field
 <details>
 <summary><strong>The history report doesn't show what a command actually printed</strong></summary>
 
-By design — each command launches in its own interactive `cmd.exe` window (`Start-Process`, no output redirection), so `Historique.log` records the command that was run, not its output. Capturing real output would mean redirecting every one of the 145 commands into a log file, which would also make several of them (the ones intentionally left interactive/open, like live network monitors) behave differently than intended — a larger architectural change, not the current design.
+By design — each command launches in its own interactive `cmd.exe` window (`Start-Process`, no output redirection), so `History.log` records the command that was run, not its output. Capturing real output would mean redirecting every one of the 145 commands into a log file, which would also make several of them (the ones intentionally left interactive/open, like live network monitors) behave differently than intended — a larger architectural change, not the current design.
 </details>
 
 ---
 
-<sub>Toolbox-SystemCommands_Win11 — WinForms launcher, per-command confirmation on anything state-changing, full history logging, 47-assertion self-test.</sub>
+<sub>Toolbox-SystemCommands — WinForms launcher, per-command confirmation on anything state-changing, full history logging, 47-assertion self-test.</sub>
