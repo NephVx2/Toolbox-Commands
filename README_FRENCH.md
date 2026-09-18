@@ -1,4 +1,4 @@
-# Toolbox-SystemCommands_Win11
+# Toolbox-SystemCommands-FRENCH
 
 🇬🇧 [English version](README.md)
 
@@ -11,6 +11,8 @@ Un lanceur WinForms a theme sombre pour les commandes systeme Windows 11. Un cli
 ## Sommaire
 
 - [Presentation](#presentation)
+- [Structure des dossiers : EN vs FRENCH](#structure-des-dossiers--en-vs-french)
+- [Captures d'ecran](#captures-decran)
 - [Fonctionnalites de l'interface](#fonctionnalites-de-linterface)
 - [Catalogue de commandes](#catalogue-de-commandes)
 - [Modele de securite des commandes](#modele-de-securite-des-commandes)
@@ -27,13 +29,41 @@ Un lanceur WinForms a theme sombre pour les commandes systeme Windows 11. Un cli
 
 ## Presentation
 
-`Toolbox-SystemCommands_Win11.ps1` est un lanceur graphique (WinForms, theme sombre) pour les commandes PowerShell/cmd du quotidien utilisees pour diagnostiquer et entretenir une machine Windows 11 — sante disque, resets reseau, reparations Windows Update, verification des pilotes, posture de securite, bascules de confidentialite/telemetrie, et bien plus.
+`Toolbox-SystemCommands-FRENCH.ps1` est un lanceur graphique (WinForms, theme sombre) pour les commandes PowerShell/cmd du quotidien utilisees pour diagnostiquer et entretenir une machine Windows 11 — sante disque, resets reseau, reparations Windows Update, verification des pilotes, posture de securite, bascules de confidentialite/telemetrie, et bien plus.
 
 Chaque commande s'execute dans **sa propre fenetre console** (`cmd.exe /k`), donc vous voyez la sortie brute, non filtree, exactement comme si vous aviez tape la commande vous-meme — la toolbox ne parse, ne capture ni ne reinterprete rien.
 
 L'application **s'auto-eleve au demarrage** : comme la plupart des commandes necessitent de toute facon les droits administrateur, l'elevation se fait une seule fois pour toute la session, et chaque fenetre console ouverte ensuite herite de cette elevation — plus de prompt UAC repete par bouton.
 
-Un seul fichier compagnon accompagne le script et doit rester dans le meme dossier : **`Commands.psd1`**, le catalogue de commandes (145 commandes).
+Un seul fichier compagnon accompagne le script et doit rester dans le meme dossier : **`Commands-FRENCH.psd1`**, le catalogue de commandes (145 commandes).
+
+---
+
+## Structure des dossiers : EN vs FRENCH
+
+Ce depot fournit **deux versions independantes et autonomes** de la toolbox — anglaise et francaise — chacune dans son propre dossier, pour ne jamais melanger le script d'une langue avec le catalogue de l'autre :
+
+| Dossier | Contenu |
+|---|---|
+| **`Toolbox-SystemCommands-FRENCH/`** | `Toolbox-SystemCommands-FRENCH.ps1` + `Commands-FRENCH.psd1` — entierement en francais : libelles, descriptions, texte d'aide, et tout ce qui s'affiche dans la console. **C'est cette version-ci, celle documentee dans ce README.** |
+| **`Toolbox-SystemCommands-EN/`** | Le script et le catalogue en langue anglaise — memes fonctionnalites, memes 145 commandes, entierement en anglais |
+
+Les deux versions sont fonctionnellement identiques (meme catalogue, memes categories, meme nombre d'assertions au self-test) — seule la langue d'affichage differe. Choisissez **un seul** dossier et copiez **les deux fichiers qu'il contient ensemble** ; ne melangez jamais le `.ps1` d'un dossier avec le `.psd1` de l'autre (`Toolbox-SystemCommands-FRENCH.ps1` va avec `Commands-FRENCH.psd1`, pas avec le catalogue anglais) — les libelles et les textes se retrouveraient alors dans deux langues differentes au sein de la meme interface. Les deux versions fonctionnent aussi bien sur une installation Windows en francais qu'en anglais — ce script ne fait que lire/ecrire directement dans le registre et WMI, donc contrairement a d'autres scripts de la suite, rien ici n'est affecte par la langue d'affichage de Windows.
+
+Si vous n'avez besoin que d'une seule langue, vous pouvez supprimer sans risque le dossier dont vous ne vous servez pas.
+
+---
+
+## Captures d'ecran
+
+<p float="left">
+  <img src="https://raw.githubusercontent.com/NephVx2/Toolbox-SystemCommands/main/screenshots-FRENCH/01-int%C3%A9grit%C3%A9-syst%C3%A8me.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/NephVx2/Toolbox-SystemCommands/main/screenshots-FRENCH/11-html-preview.png" width="48%" />
+</p>
+
+A gauche : la fenetre principale (categorie Integrite systeme depliee, barre favoris/recherche/export, panneau de description fixe) avec le popup d'aide du Pack Integrite complet ouvert. A droite : le rapport HTML d'historique exporte.
+
+D'autres captures (Disque, Reseau avec le detail de Reset pile TCP/IP, Windows Update/Performance, une verification live de l'etat de virtualisation, Pilotes/Materiel, Securite rapide avec les certificats Secure Boot 2023, Confidentialite/Telemetrie, et Divers) sont dans le dossier [`screenshots-FRENCH`](https://github.com/NephVx2/Toolbox-SystemCommands/tree/main/screenshots-FRENCH).
 
 ---
 
@@ -50,6 +80,10 @@ Un seul fichier compagnon accompagne le script et doit rester dans le meme dossi
 | **Historique** | Chaque lancement est horodate et enregistre, avec le nom de la machine, l'utilisateur, la version de Windows, et le PID du processus lance |
 | **Export HTML** | Un bouton genere un rapport a theme sombre (identite visuelle partagee avec le reste de la suite de maintenance) — groupe par jour (le plus recent deplie, les precedents replies), avec un filtre JavaScript en direct, des cartes de statistiques (total commandes, jours d'activite, commandes sensibles lancees, commande la plus utilisee), et les commandes sensibles surlignees en orange |
 | **Export JSON** | Memes donnees d'historique en JSON exploitable par machine |
+
+<img src="https://raw.githubusercontent.com/NephVx2/Toolbox-SystemCommands/main/screenshots-FRENCH/09-check-services-t%C3%A9l%C3%A9m%C3%A9trie.png" width="70%" />
+
+*Le popup d'aide du bouton `?`, ouvert sur "Verification services telemetrie" — sa sortie console (derriere) montre les 5 services qu'elle vient d'interroger, et le popup detaille ce que fait chacun d'eux.*
 
 ---
 
@@ -77,7 +111,7 @@ Un seul fichier compagnon accompagne le script et doit rester dans le meme dossi
 - **26 commandes necessitent actuellement une confirmation** — tout ce qui modifie l'etat du systeme, necessite un redemarrage, ou pourrait perturber une session en cours (ex : `Reset Winsock`, `Reset pile TCP/IP`, `CHKDSK C: /f /r (au reboot)`, `Redemarrer le PC`, `Eteindre le PC`, la plupart des bascules de desactivation dans Confidentialite/Telemetrie).
 - Une assertion dediee du self-test verrouille le fait que six commandes specifiques connues comme sensibles (reset Winsock, reset pile TCP/IP, reset composants WU, CHKDSK planifie, redemarrage, extinction) portent **toujours** `Confirm = $true` — une regression a cet endroit ferait immediatement echouer `-SelfTest` plutot que de se manifester plus tard comme une action destructrice silencieuse et non confirmee.
 - **Aucune commande n'utilise `wmic`** (retire depuis Windows 11 24H2) — verifie par une assertion de regression dediee du self-test.
-- Le champ `Cmd` du catalogue est **toujours en guillemets simples** dans `Commands.psd1`, ce qui empeche structurellement toute interpolation de variable PowerShell (`$_`, `$err`, etc.) de se glisser dans une commande — la cause racine de deux bugs precoces (v1.4.3, v1.4.4) que cette conception elimine entierement plutot que de corriger au cas par cas.
+- Le champ `Cmd` du catalogue est **toujours en guillemets simples** dans `Commands-FRENCH.psd1`, ce qui empeche structurellement toute interpolation de variable PowerShell (`$_`, `$err`, etc.) de se glisser dans une commande — la cause racine de deux bugs precoces (v1.4.3, v1.4.4) que cette conception elimine entierement plutot que de corriger au cas par cas.
 - Quelques commandes trop complexes pour survivre a la reconstruction `-Command` de `cmd.exe` sont stockees en Base64 (`-EncodedCommand`, UTF-16LE) a la place. Deux assertions du self-test decodent chacune d'entre elles et verifient que le script obtenu est syntaxiquement valide (via le vrai parseur AST PowerShell) — pour qu'un blob Base64 corrompu ou tronque soit detecte par `-SelfTest` plutot que de se manifester par une fenetre console vide et silencieuse au clic.
 
 ---
@@ -87,19 +121,19 @@ Un seul fichier compagnon accompagne le script et doit rester dans le meme dossi
 - Windows 10 ou 11.
 - PowerShell 5.1 (integre a Windows) — le script cible `#Requires -Version 5.1`, donc PowerShell 7+ fonctionne aussi.
 - Droits administrateur. L'application s'auto-eleve au demarrage (fenetre UAC) — sauf `-SelfTest`, qui fonctionne sans elevation et n'ouvre jamais l'interface.
-- `Commands.psd1` **doit** etre present dans le meme dossier que le script — l'application affiche une erreur claire et se replie sur un catalogue vide plutot que de planter si le fichier est absent ou invalide.
+- `Commands-FRENCH.psd1` **doit** etre present dans le meme dossier que le script — l'application affiche une erreur claire et se replie sur un catalogue vide plutot que de planter si le fichier est absent ou invalide.
 - Si le script est signe numeriquement (recommande en environnement `-ExecutionPolicy AllSigned`/`RemoteSigned`) : le certificat de signature doit etre approuve sur la machine cible.
 
 ---
 
 ## Premier lancement (pas a pas)
 
-1. Copier **a la fois** `Toolbox-SystemCommands_Win11.ps1` **et** `Commands.psd1` sur la machine cible, dans le meme dossier (ex : `C:\Scripts\Toolbox`). Le script ne trouvera pas ses commandes si `Commands.psd1` est laisse de cote.
+1. Copier **a la fois** `Toolbox-SystemCommands-FRENCH.ps1` **et** `Commands-FRENCH.psd1` — issus du meme dossier de langue, voir [Structure des dossiers](#structure-des-dossiers--en-vs-french) — sur la machine cible, dans le meme dossier (ex : `C:\Scripts\Toolbox`). Le script ne trouvera pas ses commandes si `Commands-FRENCH.psd1` est laisse de cote.
 
 2. Valider le catalogue et les fonctions internes **sans ouvrir l'interface et sans droits admin** :
 
    ```powershell
-   .\Toolbox-SystemCommands_Win11.ps1 -SelfTest
+   .\Toolbox-SystemCommands-FRENCH.ps1 -SelfTest
    ```
 
    Execute 47 assertions : structure du catalogue (chaque commande a un libelle/une commande/une description/un flag confirm, aucun libelle duplique), regressions connues (aucun pipe non echappe, aucun `wmic`, les blocs `-EncodedCommand` decodent et se parsent tous correctement), les six commandes sensibles nommees portent toutes `Confirm = $true`, toutes les fonctions requises sont definies, les chemins de journalisation/favoris sont valides, et la verification d'elevation elle-meme fonctionne. Sort avec le code `0` si tout passe, `1` sinon.
@@ -107,7 +141,7 @@ Un seul fichier compagnon accompagne le script et doit rester dans le meme dossi
 3. Lancer la toolbox normalement (accepter le prompt UAC) :
 
    ```powershell
-   .\Toolbox-SystemCommands_Win11.ps1
+   .\Toolbox-SystemCommands-FRENCH.ps1
    ```
 
 4. Parcourir par categorie, ou appuyer sur `Ctrl+F` et rechercher ce dont vous avez besoin (ex : "DNS", "BitLocker", "telemetrie").
@@ -122,21 +156,31 @@ Un seul fichier compagnon accompagne le script et doit rester dans le meme dossi
 
 ## Raccourci bureau
 
-Lancer la toolbox par clic droit sur le fichier `.ps1` puis "Executer avec PowerShell" fonctionne, mais fait clignoter brievement une fenetre console et la laisse ouverte derriere l'interface graphique. Un raccourci bureau evite les deux problemes et offre un lancement par simple double-clic.
+Lancer la toolbox par clic droit sur le fichier `.ps1` puis "Executer avec PowerShell" fonctionne, mais fait clignoter brievement une fenetre console et la laisse ouverte derriere l'interface graphique. Un raccourci bureau evite les deux problemes et offre un lancement par simple double-clic — utile si vous comptez utiliser la toolbox regulierement.
 
 1. Clic droit sur le Bureau → **Nouveau → Raccourci**.
 
-2. Dans l'emplacement, saisir (en adaptant le chemin du script a l'endroit ou vous l'avez place) :
+2. Dans l'emplacement, saisir (en adaptant le chemin du script a l'endroit ou vous l'avez place) — choisir la variante qui correspond a ce qui est installe sur la machine :
+
+   **Windows PowerShell 5.1** (integre a toute installation Windows, toujours disponible) :
 
    ```
-   powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Scripts\Toolbox\Toolbox-SystemCommands_Win11.ps1"
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Scripts\Toolbox\Toolbox-SystemCommands-FRENCH.ps1"
+   ```
+
+   **PowerShell 7+** (uniquement si installe separement) :
+
+   ```
+   pwsh.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Scripts\Toolbox\Toolbox-SystemCommands-FRENCH.ps1"
    ```
 
    | Parametre | Pourquoi |
    |---|---|
    | `-NoProfile` | Ignore le chargement de votre profil PowerShell, donc la toolbox demarre plus vite et n'est pas affectee par un contenu personnalise dans ce profil |
    | `-ExecutionPolicy Bypass` | S'applique uniquement a ce processus — permet au script de s'executer meme si la politique d'execution par defaut du systeme le bloquerait sinon, sans modifier cette politique a l'echelle de la machine |
-   | `-WindowStyle Hidden` | Supprime la fenetre console PowerShell, pour que seule l'interface propre de la toolbox apparaisse |
+   | `-WindowStyle Hidden` | Supprime la fenetre console du processus de lancement, pour que seule l'interface propre de la toolbox apparaisse |
+
+   Les deux variantes se comportent en pratique de facon identique : la toolbox s'auto-eleve au demarrage via `Start-Process powershell.exe -Verb RunAs` (voir le bloc d'auto-elevation du script), qui relance toujours sous Windows PowerShell 5.1 une fois le prompt UAC accepte — que le raccourci ait demarre avec `powershell.exe` ou `pwsh.exe`. Le choix entre les deux n'affecte que ce tout premier instant, bref et non eleve, avant que l'UAC ne se declenche ; choisissez celui que vous avez effectivement installe.
 
 3. Nommer le raccourci (ex : "Toolbox Commandes Systeme"), puis terminer.
 
@@ -173,7 +217,7 @@ La toolbox ne redirige ni ne capture jamais la sortie des commandes qu'elle lanc
 
 ## Etendre le catalogue
 
-Ajouter une commande signifie editer directement `Commands.psd1` — il n'y a volontairement pas d'editeur integre a l'application, pour garder le catalogue en texte brut, facile a comparer, versionner et synchroniser entre machines.
+Ajouter une commande signifie editer directement `Commands-FRENCH.psd1` — il n'y a volontairement pas d'editeur integre a l'application, pour garder le catalogue en texte brut, facile a comparer, versionner et synchroniser entre machines.
 
 ```powershell
 @{ Label   = "Ma nouvelle commande"
@@ -195,7 +239,7 @@ Ajouter une commande signifie editer directement `Commands.psd1` — il n'y a vo
 
 ## Deploiement multi-machines
 
-1. **Distribuer les deux fichiers ensemble** : `Toolbox-SystemCommands_Win11.ps1` et `Commands.psd1`, dans le meme dossier.
+1. **Distribuer les deux fichiers ensemble** : `Toolbox-SystemCommands-FRENCH.ps1` et `Commands-FRENCH.psd1`, dans le meme dossier — issus du meme dossier de langue (voir [Structure des dossiers](#structure-des-dossiers--en-vs-french)).
 
 2. **Approuver le certificat de signature** si une politique d'execution stricte est en place (`-ExecutionPolicy AllSigned`/`RemoteSigned`).
 
@@ -203,7 +247,7 @@ Ajouter une commande signifie editer directement `Commands.psd1` — il n'y a vo
 
 4. Comme la toolbox est un **lanceur graphique pense pour un usage interactif, en presence d'un utilisateur**, elle n'est pas concue pour etre declenchee de maniere non supervisee depuis une tache planifiee comme le serait un script de nettoyage — il n'existe pas de parametre CLI pour lancer une commande specifique de maniere non interactive. Deployez-la comme un outil que les gens ouvrent et parcourent eux-memes, pas comme une tache de fond.
 
-5. Garder `Commands.psd1` identique sur toutes les machines — c'est son but.
+5. Garder `Commands-FRENCH.psd1` identique sur toutes les machines — c'est son but.
 
 ---
 
@@ -216,7 +260,7 @@ C'etait historiquement le symptome d'un probleme de decodage ou de syntaxe `-Enc
 </details>
 
 <details>
-<summary><strong>Le chargement de Commands.psd1 echoue, ou tout le catalogue est vide</strong></summary>
+<summary><strong>Le chargement de Commands-FRENCH.psd1 echoue, ou tout le catalogue est vide</strong></summary>
 
 Presque toujours un `$` non echappe dans un champ `Desc` ou `Help` (qui utilisent des guillemets doubles, donc PowerShell tente de l'interpoler comme une variable — le mode "restricted language" d'`Import-PowerShellDataFile` refuse alors de charger le fichier entier). Chercher dans le fichier modifie en dernier un `$` litteral non precede d'un backtick. `-SelfTest` inclut une verification de regression dediee qui scanne chaque ligne `Desc`/`Help` a la recherche exactement de ce motif.
 </details>
@@ -235,4 +279,4 @@ C'est voulu — chaque commande se lance dans sa propre fenetre `cmd.exe` intera
 
 ---
 
-<sub>Toolbox-SystemCommands_Win11 — lanceur WinForms, confirmation par commande sur tout ce qui modifie l'etat systeme, journalisation complete de l'historique, self-test a 47 assertions.</sub>
+<sub>Toolbox-SystemCommands-FRENCH — lanceur WinForms, confirmation par commande sur tout ce qui modifie l'etat systeme, journalisation complete de l'historique, self-test a 47 assertions.</sub>
